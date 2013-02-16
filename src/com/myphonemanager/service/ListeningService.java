@@ -51,13 +51,19 @@ public class ListeningService extends Service {
 
                         com.android.internal.telephony.ITelephony  telephonyService = (com.android.internal.telephony.ITelephony) m.invoke(tm);
                         //telephonyService.silenceRinger();
+                        boolean unknown = true;
+                        
                         if ( database.hasBadPhone(incomingNumber) ) {
                         	Log.i(TAG, incomingNumber + " is bad");
+                        	unknown = false;
                         	telephonyService.endCall();
-                        } else if ( database.hasGoodPhone(incomingNumber) ) {
+                        }
+                        if ( database.hasGoodPhone(incomingNumber) ) {
                         	Log.i(TAG, incomingNumber + " is good");
+                        	unknown = false;
                         	GoodnessIndicator.good = true;
-                        } else {
+                        }
+                        if ( unknown ){
                         	Log.i(TAG, incomingNumber + " is unknown");
                         }
                     }

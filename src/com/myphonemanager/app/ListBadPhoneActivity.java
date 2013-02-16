@@ -10,10 +10,16 @@ import com.myphonemanager.data.BadPhone;
 import com.myphonemanager.data.MySQLiteHelper;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 
 public class ListBadPhoneActivity extends Activity {
 
@@ -27,13 +33,43 @@ public class ListBadPhoneActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_list_bad_phone);
 		
-		ListView phonesList = (ListView) findViewById(R.id.bad_phone_list);
+		final ListView phonesList = (ListView) findViewById(R.id.bad_phone_list);
 		List<BadPhone> badPhones = database.getAllBadPhones();
-		SimpleAdapter adapter = new SimpleAdapter(context, getData(badPhones), R.layout.list_bad_phone,
+		phonesList.setAdapter(new SimpleAdapter(context, getData(badPhones), R.layout.list_bad_phone,
 				new String[] {"name", "number"},
-				new int[] {R.id.name, R.id.number});
+				new int[] {R.id.name, R.id.number}));
 		
-		phonesList.setAdapter(adapter);
+		phonesList.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				final int position = arg2;
+				final BadPhone phone = database.getBadPhoneByPosition(position);
+				
+				AlertDialog.Builder builder = new AlertDialog.Builder(context);
+				builder.setTitle("È·ÈÏ");
+				builder.setMessage("É¾³ý " + phone.getNumber() + " ?");
+				builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						database.delBadPhone(phone);
+						Toast.makeText(context, "ÒÑÉ¾³ý¾Ü¾øºÅÂë "+phone.getNumber(), Toast.LENGTH_SHORT).show();
+						List<BadPhone> badPhones = database.getAllBadPhones();
+						phonesList.setAdapter(new SimpleAdapter(context, getData(badPhones), R.layout.list_bad_phone,
+								new String[] {"name", "number"},
+								new int[] {R.id.name, R.id.number}));
+					}
+					
+				});
+				builder.setNegativeButton(R.string.cancel, null);
+				builder.show();
+				
+				return false;
+			}
+			
+		});
 	}
 
 	private List<Map<String, Object>> getData(List<BadPhone> badPhones) {

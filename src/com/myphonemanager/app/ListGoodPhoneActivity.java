@@ -10,30 +10,66 @@ import com.myphonemanager.data.GoodPhone;
 import com.myphonemanager.data.MySQLiteHelper;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 
 public class ListGoodPhoneActivity extends Activity {
 	
 	final static String TAG = "ListGoodPhoneActivity"; 
 	
 	private Context context = this;
-	private MySQLiteHelper database = new MySQLiteHelper(context);	
+	private MySQLiteHelper database = new MySQLiteHelper(context);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_list_good_phone);
 
-		ListView phonesList = (ListView) findViewById(R.id.good_phone_list);
+		final ListView phonesList = (ListView) findViewById(R.id.good_phone_list);
 		List<GoodPhone> goodPhones = database.getAllGoodPhones();
-		SimpleAdapter adapter = new SimpleAdapter(context, getData(goodPhones), R.layout.list_good_phone,
+		phonesList.setAdapter(new SimpleAdapter(context, getData(goodPhones), R.layout.list_good_phone,
 				new String[] {"name", "number", "msg"},
-				new int[] {R.id.name, R.id.number, R.id.msg});
-		
-		phonesList.setAdapter(adapter);
+				new int[] {R.id.name, R.id.number, R.id.msg}));
+
+		phonesList.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				final int position = arg2;
+				final GoodPhone phone = database.getGoodPhoneByPosition(position);
+				
+				AlertDialog.Builder builder = new AlertDialog.Builder(context);
+				builder.setTitle("È·ÈÏ");
+				builder.setMessage("É¾³ý " + phone.getNumber() + " ?");
+				builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						database.delGoodPhone(phone);
+						Toast.makeText(context, "ÒÑÉ¾³ýÇ×ÇéºÅÂë "+phone.getNumber(), Toast.LENGTH_SHORT).show();
+						List<GoodPhone> goodPhones = database.getAllGoodPhones();
+						phonesList.setAdapter(new SimpleAdapter(context, getData(goodPhones), R.layout.list_good_phone,
+								new String[] {"name", "number", "msg"},
+								new int[] {R.id.name, R.id.number, R.id.msg}));
+					}
+					
+				});
+				builder.setNegativeButton(R.string.cancel, null);
+				builder.show();
+				
+				return false;
+			}
+			
+		});
 	}
 
 	private List<Map<String, Object>> getData(List<GoodPhone> goodPhones) {

@@ -220,4 +220,14 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	            new String[] { String.valueOf(phone.getID()) });
 	    db.close();
 	}
+	
+	public BadPhone getBadPhoneByPosition(int position) {
+		List<BadPhone> phones = this.getAllBadPhones();
+		return phones.get(position);
+	}
+	
+	public GoodPhone getGoodPhoneByPosition(int position) {
+		List<GoodPhone> phones = this.getAllGoodPhones();
+		return phones.get(position);
+	}
 }

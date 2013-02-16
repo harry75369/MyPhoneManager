@@ -10,5 +10,6 @@
     <string name="title_activity_help">帮助</string>
     <string name="title_activity_list_bad_phone">拒绝号码列表</string>
     <string name="title_activity_list_good_phone">亲情号码列表</string>
+    <string name="confirm">确认</string>
 
 </resources>
