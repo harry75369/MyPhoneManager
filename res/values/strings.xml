@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">我的手机管家</string>
+    <string name="title_activity_phone">来电管理</string>
+    <string name="title_activity_message">短信管理</string>
+    <string name="phone_number">电话号码</string>
+    <string name="add">添加</string>
+    <string name="cancel">取消</string>
+    <string name="title_activity_help">帮助</string>
+    <string name="title_activity_list_bad_phone">拒绝号码列表</string>
+    <string name="title_activity_list_good_phone">亲情号码列表</string>
+
+</resources>

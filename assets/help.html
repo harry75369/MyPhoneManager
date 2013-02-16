@@ -1,0 +1,56 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US" >
+<head>
+	<title>帮助</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<style type="text/css">
+	a {
+		color: #00C;
+	}
+	</style>
+</head>
+<body>
+	<h1>我的手机管家</h1>
+
+	<ul>
+		<li><a href="#phone">来电管理</a></li>
+		<li><a href="#message">短信管理</a></li>
+		<li><a href="#service">开关服务</a></li>
+		<li><a href="#version">版本信息</a></li>
+	</ul>
+	<hr>
+
+	<p>
+		<a name="phone"><h2>来电管理</h2></a>
+		本程序可以根据来电号码采取不同的策略：
+		<ul>
+			<li>该号码在拒绝号码列表里：直接自动挂断电话，并记录在系统的通话历史中。</li>
+			<li>该号码在亲情号码列表里：若通话未成功（长时间未接听、对方挂断电话、己方挂断电话），自动发送预先设置好的亲情提示信息。</li>
+			<li>该号码不在任何号码列表里：按照正常情况进行处理。</li>
+		</ul>
+	</p>
+	<hr>
+
+	<p>
+		<a name="message"><h2>短信管理</h2></a>
+	</p>
+	<hr>
+
+	<p>
+		<a name="service"><h2>开关服务</h2></a>
+		本程序需要开启一个后台服务来监听电话与短信，因此安装本程序之后请允许本程序在后台运行（默认开启）。<br/>
+		并且本程序需要一定的系统权限，因此安装本程序之后请将本程序添加到系统的信任程序列表里（默认关闭）。<br/>
+		经测试，开启服务只要单击“打开服务”即可，而在已经开启服务的情况下想要关闭服务，需要在单击“关闭服务”之后在后台完全退出程序之后才可以。<br/>
+		该服务程序在 Android 4.0.4 系统环境下通过测试。
+	</p>
+	<hr>
+
+	<p>
+		<a name="version"><h2>版本信息</h2></a>
+		版本: 1.0<br/>
+		作者：潘正威
+	</p>
+</body>
+</html>
