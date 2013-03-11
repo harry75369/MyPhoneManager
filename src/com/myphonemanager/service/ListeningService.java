@@ -89,9 +89,9 @@ public class ListeningService extends Service {
                 			} else {
                 				manager.sendTextMessage(incomingNumber, null, msg, null, null);
                 			}
-                			Toast.makeText(getBaseContext(), "·¢ËÍÇ×Çé¶ÌĞÅ³É¹¦", Toast.LENGTH_LONG).show();
+                			Toast.makeText(getBaseContext(), "å‘é€äº²æƒ…çŸ­ä¿¡æˆåŠŸ", Toast.LENGTH_LONG).show();
                 		} else {
-                			Toast.makeText(getBaseContext(), "·¢ËÍÇ×Çé¶ÌĞÅÊ§°Ü", Toast.LENGTH_LONG).show();
+                			Toast.makeText(getBaseContext(), "å‘é€äº²æƒ…çŸ­ä¿¡å¤±è´¥", Toast.LENGTH_LONG).show();
                 		}
                 	}
                 	GoodnessIndicator.good = false;

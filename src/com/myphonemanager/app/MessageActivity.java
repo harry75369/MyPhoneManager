@@ -12,7 +12,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class MessageActivity extends Activity {
 	
-	static String[] menuItems = {"ÉèÖÃ", "ÒÑÀ¹½Ø¶ÌĞÅ"};
+	static String[] menuItems = {"è®¾ç½®", "å·²æ‹¦æˆªçŸ­ä¿¡"};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +28,11 @@ public class MessageActivity extends Activity {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				switch ( arg2 ) {
-				case 0: { // ÉèÖÃ
+				case 0: { // è®¾ç½®
 					
 				}
 					
-				case 1: { // ÒÑÀ¹½Ø¶ÌÏ¢
+				case 1: { // å·²æ‹¦æˆªçŸ­æ¯
 					
 				}
 				}

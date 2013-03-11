@@ -9,12 +9,12 @@ public class GoodPhone extends BadPhone {
 	
 	public GoodPhone(String name, String number, String msg) {
 		super(name, number);
-		if ( this.name.equals("À¬»ø") ) {
-			this.name = "Ç×";
+		if ( this.name.equals("åžƒåœ¾") ) {
+			this.name = "äº²";
 		}
 		
 		if ( msg.isEmpty() ) {
-			msg = "ÏÖÔÚÓÐÊÂ£¬´ý»á»ØÄã";
+			msg = "çŽ°åœ¨æœ‰äº‹ï¼Œå¾…ä¼šå›žä½ ";
 		}
 		this.msg = msg;
 	}

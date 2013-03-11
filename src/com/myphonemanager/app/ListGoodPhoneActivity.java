@@ -48,14 +48,14 @@ public class ListGoodPhoneActivity extends Activity {
 				final GoodPhone phone = database.getGoodPhoneByPosition(position);
 				
 				AlertDialog.Builder builder = new AlertDialog.Builder(context);
-				builder.setTitle("È·ÈÏ");
-				builder.setMessage("É¾³ı " + phone.getNumber() + " ?");
+				builder.setTitle("ç¡®è®¤");
+				builder.setMessage("åˆ é™¤ " + phone.getNumber() + " ?");
 				builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						database.delGoodPhone(phone);
-						Toast.makeText(context, "ÒÑÉ¾³ıÇ×ÇéºÅÂë "+phone.getNumber(), Toast.LENGTH_SHORT).show();
+						Toast.makeText(context, "å·²åˆ é™¤äº²æƒ…å·ç  "+phone.getNumber(), Toast.LENGTH_SHORT).show();
 						List<GoodPhone> goodPhones = database.getAllGoodPhones();
 						phonesList.setAdapter(new SimpleAdapter(context, getData(goodPhones), R.layout.list_good_phone,
 								new String[] {"name", "number", "msg"},

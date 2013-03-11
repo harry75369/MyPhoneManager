@@ -16,7 +16,7 @@ import android.content.Intent;
 
 public class MainActivity extends Activity {
 	
-	static String[] menuItems = {"À´µç¹ÜÀí", "¶ÌĞÅ¹ÜÀí", "´ò¿ª·şÎñ", "¹Ø±Õ·şÎñ", "°ïÖú"};
+	static String[] menuItems = {"æ¥ç”µç®¡ç†", "çŸ­ä¿¡ç®¡ç†", "æ‰“å¼€æœåŠ¡", "å…³é—­æœåŠ¡", "å¸®åŠ©"};
 	private Context context = this;
 
 	@Override
@@ -33,29 +33,29 @@ public class MainActivity extends Activity {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				switch ( arg2 ) {
-				case 0: { // À´µç¹ÜÀí
+				case 0: { // æ¥ç”µç®¡ç†
 					Intent intent = new Intent(context, PhoneActivity.class);
 					startActivity(intent);
 					break;
 				}
-				case 1: { // ¶ÌĞÅ¹ÜÀí
+				case 1: { // çŸ­ä¿¡ç®¡ç†
 					Intent intent = new Intent(context, MessageActivity.class);
 					startActivity(intent);
 					break;
 				}
-				case 2: { // ´ò¿ª·şÎñ
+				case 2: { // æ‰“å¼€æœåŠ¡
 					Intent intent = new Intent(context, ListeningService.class);
 					startService(intent);
-					Toast.makeText(context, "·şÎñÒÑ´ò¿ª", Toast.LENGTH_SHORT).show();
+					Toast.makeText(context, "æœåŠ¡å·²æ‰“å¼€", Toast.LENGTH_SHORT).show();
 					break;
 				}
-				case 3: { // ¹Ø±Õ·şÎñ
+				case 3: { // å…³é—­æœåŠ¡
 					Intent intent = new Intent(context, ListeningService.class);
 					stopService(intent);
-					Toast.makeText(context, "·şÎñÒÑ¹Ø±Õ", Toast.LENGTH_SHORT).show();
+					Toast.makeText(context, "æœåŠ¡å·²å…³é—­", Toast.LENGTH_SHORT).show();
 					break;
 				}
-				case 4: { // °ïÖú
+				case 4: { // å¸®åŠ©
 					Intent intent = new Intent(context, HelpActivity.class);
 					startActivity(intent);
 					break;

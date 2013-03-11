@@ -28,7 +28,7 @@ public class PhoneActivity extends Activity {
 	
 	final static String TAG = "PhoneActivity"; 
 
-	static String[] menuItems = {"Ôö¼Ó¾Ü¾øºÅÂë", "Ôö¼ÓÇ×ÇéºÅÂë", "¾Ü¾øºÅÂëÁĞ±í", "Ç×ÇéºÅÂëÁĞ±í"};
+	static String[] menuItems = {"å¢åŠ æ‹’ç»å·ç ", "å¢åŠ äº²æƒ…å·ç ", "æ‹’ç»å·ç åˆ—è¡¨", "äº²æƒ…å·ç åˆ—è¡¨"};
 	private Context context = this;
 	private MySQLiteHelper database = new MySQLiteHelper(context);
 	
@@ -46,14 +46,14 @@ public class PhoneActivity extends Activity {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				switch ( arg2 ) {
-				case 0: { // Ôö¼Ó¾Ü¾øºÅÂë
+				case 0: { // å¢åŠ æ‹’ç»å·ç 
 					AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
 					final EditText phone_name = new EditText(context);
 					final EditText phone_number = new EditText(context);
-					phone_name.setHint("¾Ü¾øµç»°Ãû×Ö£¨Ä¬ÈÏ£ºÀ¬»ø£©");
+					phone_name.setHint("æ‹’ç»ç”µè¯åå­—ï¼ˆé»˜è®¤ï¼šåƒåœ¾ï¼‰");
 					phone_name.setInputType(InputType.TYPE_CLASS_TEXT);
-					phone_number.setHint("¾Ü¾øµç»°ºÅÂë");
+					phone_number.setHint("æ‹’ç»ç”µè¯å·ç ");
 					phone_number.setInputType(InputType.TYPE_CLASS_PHONE);
 					
 					LinearLayout view = new LinearLayout(context);
@@ -72,9 +72,9 @@ public class PhoneActivity extends Activity {
 							BadPhone phone = new BadPhone(name, number);
 							if (phone.isValid() ) {
 								database.addBadPhone(phone);
-								Toast.makeText(context, "¾Ü¾øºÅÂëÒÑÌí¼Ó", Toast.LENGTH_SHORT).show();
+								Toast.makeText(context, "æ‹’ç»å·ç å·²æ·»åŠ ", Toast.LENGTH_SHORT).show();
 							} else {
-								Toast.makeText(context, "ÇëÊäÈëÈ«²¿ÕıÈ·ĞÅÏ¢ºóÔÙÌí¼Ó", Toast.LENGTH_SHORT).show();
+								Toast.makeText(context, "è¯·è¾“å…¥å…¨éƒ¨æ­£ç¡®ä¿¡æ¯åå†æ·»åŠ ", Toast.LENGTH_SHORT).show();
 							}
 						}
 					});
@@ -82,17 +82,17 @@ public class PhoneActivity extends Activity {
 					builder.show();
 					break;
 				}
-				case 1: { // Ôö¼ÓÇ×ÇéºÅÂë
+				case 1: { // å¢åŠ äº²æƒ…å·ç 
 					AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
 					final EditText phone_name = new EditText(context);
 					final EditText phone_number = new EditText(context);
 					final EditText phone_msg = new EditText(context);
-					phone_name.setHint("Ç×Çéµç»°Ãû×Ö£¨Ä¬ÈÏ£ºÇ×£©");
+					phone_name.setHint("äº²æƒ…ç”µè¯åå­—ï¼ˆé»˜è®¤ï¼šäº²ï¼‰");
 					phone_name.setInputType(InputType.TYPE_CLASS_TEXT);
-					phone_number.setHint("Ç×Çéµç»°ºÅÂë");
+					phone_number.setHint("äº²æƒ…ç”µè¯å·ç ");
 					phone_number.setInputType(InputType.TYPE_CLASS_PHONE);
-					phone_msg.setHint("Ç×Çéµç»°ÏûÏ¢£¨Ä¬ÈÏ£ºÏÖÔÚÓĞÊÂ£¬´ı»á»ØÄã£©");
+					phone_msg.setHint("äº²æƒ…ç”µè¯æ¶ˆæ¯ï¼ˆé»˜è®¤ï¼šç°åœ¨æœ‰äº‹ï¼Œå¾…ä¼šå›ä½ ï¼‰");
 					phone_msg.setInputType(InputType.TYPE_CLASS_TEXT);
 					
 					LinearLayout view = new LinearLayout(context);
@@ -113,9 +113,9 @@ public class PhoneActivity extends Activity {
 							GoodPhone phone = new GoodPhone(name, number, msg);
 							if ( phone.isValid() ) {
 								database.addGoodPhone(phone);
-								Toast.makeText(context, "Ç×ÇéºÅÂëÒÑÌí¼Ó", Toast.LENGTH_SHORT).show();
+								Toast.makeText(context, "äº²æƒ…å·ç å·²æ·»åŠ ", Toast.LENGTH_SHORT).show();
 							} else {
-								Toast.makeText(context, "ÇëÊäÈëÈ«²¿ÕıÈ·ĞÅÏ¢ºóÔÙÌí¼Ó", Toast.LENGTH_SHORT).show();
+								Toast.makeText(context, "è¯·è¾“å…¥å…¨éƒ¨æ­£ç¡®ä¿¡æ¯åå†æ·»åŠ ", Toast.LENGTH_SHORT).show();
 							}
 						}
 					});
@@ -123,12 +123,12 @@ public class PhoneActivity extends Activity {
 					builder.show();
 					break;
 				}
-				case 2: { // ¾Ü¾øºÅÂëÁĞ±í
+				case 2: { // æ‹’ç»å·ç åˆ—è¡¨
 					Intent intent = new Intent(context, ListBadPhoneActivity.class);
 					startActivity(intent);
 					break;
 				}
-				case 3: { // Ç×ÇéºÅÂëÁĞ±í
+				case 3: { // äº²æƒ…å·ç åˆ—è¡¨
 					Intent intent = new Intent(context, ListGoodPhoneActivity.class);
 					startActivity(intent);
 					break;
