@@ -4,6 +4,8 @@ import com.myphonemanager.R;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,7 +14,10 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class MessageActivity extends Activity {
 	
+	final static String TAG = "MessageActivity"; 
+	
 	static String[] menuItems = {"设置", "已拦截短信"};
+	private Context context = this;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +34,12 @@ public class MessageActivity extends Activity {
 					long arg3) {
 				switch ( arg2 ) {
 				case 0: { // 设置
-					
+					break;
 				}
-					
 				case 1: { // 已拦截短息
-					
+					Intent intent = new Intent(context, ListMessageActivity.class);
+					startActivity(intent);
+					break;
 				}
 				}
 				

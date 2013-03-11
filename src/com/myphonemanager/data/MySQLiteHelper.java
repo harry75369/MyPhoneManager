@@ -1,6 +1,7 @@
 package com.myphonemanager.data;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -8,19 +9,24 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.telephony.SmsMessage;
 
 public class MySQLiteHelper extends SQLiteOpenHelper {
 	
 	private static final String DB_NAME = "myphonemanager.sqlite";
-	private static final int DB_VERSION = 3;
+	private static final int DB_VERSION = 1;
 	
 	private static final String TB_BAD_PHONE = "bad_phone";
 	private static final String TB_GOOD_PHONE = "good_phone";
+	private static final String TB_MESSAGE = "message";
 	
 	private static final String KEY_ID = "id";
 	private static final String KEY_PHONE_NAME = "phone_name";
 	private static final String KEY_PHONE_NUM = "phone_number";
 	private static final String KEY_PHONE_MSG = "phone_msg";
+	private static final String KEY_MSG_FROM = "msg_from";
+	private static final String KEY_MSG_BODY = "msg_body";
+	private static final String KEY_MSG_DATE = "msg_date";
 	
 	
 	public MySQLiteHelper(Context context) {
@@ -31,8 +37,10 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_BAG_TABLE = "CREATE TABLE " + TB_BAD_PHONE + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_PHONE_NAME + " TEXT," + KEY_PHONE_NUM + " TEXT" + ")";
 		String CREATE_GOOD_TABLE = "CREATE TABLE " + TB_GOOD_PHONE + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_PHONE_NAME + " TEXT," + KEY_PHONE_NUM + " TEXT," + KEY_PHONE_MSG + " TEXT" + ")";
+		String CREATE_MESSAGE_TABLE = "CREATE TABLE " + TB_MESSAGE + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_MSG_FROM + " TEXT," + KEY_MSG_BODY + " TEXT," + KEY_MSG_DATE + " TEXT" + ")";
 	    db.execSQL(CREATE_BAG_TABLE);
 	    db.execSQL(CREATE_GOOD_TABLE);
+	    db.execSQL(CREATE_MESSAGE_TABLE);
 	}
 
 	@Override
@@ -40,6 +48,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 		// Drop older table if existed
 		db.execSQL("DROP TABLE IF EXISTS " + TB_BAD_PHONE);
         db.execSQL("DROP TABLE IF EXISTS " + TB_GOOD_PHONE);
+        db.execSQL("DROP TABLE IF EXISTS " + TB_MESSAGE);
  
         // Create tables again
         onCreate(db);
@@ -229,5 +238,46 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	public GoodPhone getGoodPhoneByPosition(int position) {
 		List<GoodPhone> phones = this.getAllGoodPhones();
 		return phones.get(position);
+	}
+
+	public void saveMessage(SmsMessage messages) {
+	    String from = messages.getOriginatingAddress();
+	    String body = messages.getMessageBody();
+	    String date = Calendar.getInstance().getTime().toString();
+
+	    SQLiteDatabase db = this.getWritableDatabase();
+
+	    ContentValues values = new ContentValues();
+	    values.put(KEY_MSG_FROM, from);
+	    values.put(KEY_MSG_BODY, body);
+	    values.put(KEY_MSG_DATE, date);
+
+	    db.insert(TB_MESSAGE, null, values);
+	    db.close();
+	}
+
+	public List<Message> getAllMessages() {
+		List<Message> msgList = new ArrayList<Message>();
+	    // Select All Query
+	    String selectQuery = "SELECT  * FROM " + TB_MESSAGE;
+	 
+	    SQLiteDatabase db = this.getReadableDatabase();
+	    Cursor cursor = db.rawQuery(selectQuery, null);
+	 
+	    // looping through all rows and adding to list
+	    if ( cursor != null ) {
+		    if (cursor.moveToFirst()) {
+		        do {
+		        	Message msg = new Message(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3));
+		            // Adding msg to list
+		        	msgList.add(msg);
+		        } while (cursor.moveToNext());
+		    }
+		    cursor.close();
+	    }
+	    db.close();
+	 
+	    // return msg list
+	    return msgList;
 	}
 }

@@ -23,6 +23,19 @@ public class ListeningService extends Service {
 	private MySQLiteHelper database = null;
 	private StateListener listener = null;
 
+	private void createAndActivateListener()
+	{
+		TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		listener = new StateListener();
+		tm.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
+	}
+	
+	private void inactivateListener()
+	{
+		TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		tm.listen(listener, PhoneStateListener.LISTEN_NONE);
+	}
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return null;
@@ -32,9 +45,8 @@ public class ListeningService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate()");
-        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        listener = new StateListener();
-        tm.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
+        createAndActivateListener();
+        
         database = new MySQLiteHelper(getBaseContext());
     }
 
@@ -106,7 +118,6 @@ public class ListeningService extends Service {
     @Override
     public void onDestroy() {
     	Log.i(TAG, "onDestroy()");
-    	TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-    	tm.listen(listener, PhoneStateListener.LISTEN_NONE);
+    	inactivateListener();
     }
 }
