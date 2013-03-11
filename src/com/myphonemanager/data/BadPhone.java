@@ -11,7 +11,7 @@ public class BadPhone {
 
 	public BadPhone(String name, String number) {
 		if ( name.isEmpty() ) {
-			name = "À¬»ø";
+			name = "垃圾";
 		}
 		
 		this.id = 0;

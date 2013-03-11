@@ -48,14 +48,14 @@ public class ListBadPhoneActivity extends Activity {
 				final BadPhone phone = database.getBadPhoneByPosition(position);
 				
 				AlertDialog.Builder builder = new AlertDialog.Builder(context);
-				builder.setTitle("È·ÈÏ");
-				builder.setMessage("ÉŸ³ý " + phone.getNumber() + " ?");
+				builder.setTitle("确认");
+				builder.setMessage("删除 " + phone.getNumber() + " ?");
 				builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						database.delBadPhone(phone);
-						Toast.makeText(context, "ÒÑÉŸ³ýŸÜŸøºÅÂë "+phone.getNumber(), Toast.LENGTH_SHORT).show();
+						Toast.makeText(context, "已删除拒绝号码 "+phone.getNumber(), Toast.LENGTH_SHORT).show();
 						List<BadPhone> badPhones = database.getAllBadPhones();
 						phonesList.setAdapter(new SimpleAdapter(context, getData(badPhones), R.layout.list_bad_phone,
 								new String[] {"name", "number"},
