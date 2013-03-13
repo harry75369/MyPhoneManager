@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 public class GoodPhone extends BadPhone {
 	
 	protected String msg;
+	protected boolean toggle_reply;
 	
 	public GoodPhone(String name, String number, String msg) {
 		super(name, number);
@@ -17,11 +18,13 @@ public class GoodPhone extends BadPhone {
 			msg = "现在有事，待会回你";
 		}
 		this.msg = msg;
+		this.toggle_reply = true;
 	}
 	
-	public GoodPhone(int id, String name, String number, String msg) {
+	public GoodPhone(int id, String name, String number, String msg, boolean toggle) {
 		super(id, name, number);
 		this.msg = msg;
+		this.toggle_reply = toggle;
 	}
 	
 	public String getMsg() {
@@ -33,8 +36,12 @@ public class GoodPhone extends BadPhone {
 		return !(name.isEmpty() || number.isEmpty() || msg.isEmpty());
 	}
 
-	public Boolean getToggle() {
-		return true;
+	public boolean getToggle() {
+		return toggle_reply;
+	}
+	
+	public void setToggle(boolean toggle) {
+		toggle_reply = toggle;
 	}
 
 }

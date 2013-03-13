@@ -24,6 +24,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	private static final String KEY_PHONE_NAME = "phone_name";
 	private static final String KEY_PHONE_NUM = "phone_number";
 	private static final String KEY_PHONE_MSG = "phone_msg";
+	private static final String KEY_PHONE_REPLY = "phone_reply";
 	private static final String KEY_MSG_FROM = "msg_from";
 	private static final String KEY_MSG_BODY = "msg_body";
 	private static final String KEY_MSG_DATE = "msg_date";
@@ -36,7 +37,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_BAG_TABLE = "CREATE TABLE " + TB_BAD_PHONE + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_PHONE_NAME + " TEXT," + KEY_PHONE_NUM + " TEXT" + ")";
-		String CREATE_GOOD_TABLE = "CREATE TABLE " + TB_GOOD_PHONE + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_PHONE_NAME + " TEXT," + KEY_PHONE_NUM + " TEXT," + KEY_PHONE_MSG + " TEXT" + ")";
+		String CREATE_GOOD_TABLE = "CREATE TABLE " + TB_GOOD_PHONE + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_PHONE_NAME + " TEXT," + KEY_PHONE_NUM + " TEXT," + KEY_PHONE_MSG + " TEXT," + KEY_PHONE_REPLY + " INTEGER"+ ")";
 		String CREATE_MESSAGE_TABLE = "CREATE TABLE " + TB_MESSAGE + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_MSG_FROM + " TEXT," + KEY_MSG_BODY + " TEXT," + KEY_MSG_DATE + " TEXT" + ")";
 	    db.execSQL(CREATE_BAG_TABLE);
 	    db.execSQL(CREATE_GOOD_TABLE);
@@ -55,6 +56,13 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	}
 	
 	public void addBadPhone(BadPhone phone) {
+		BadPhone old = getBadPhone(phone.getNumber());
+		if ( old != null ) {
+			phone.setID(old.getID());
+			updateBadPhone(phone);
+			return;
+		}
+		
 		SQLiteDatabase db = this.getWritableDatabase();
 		 
 	    ContentValues values = new ContentValues();
@@ -66,12 +74,20 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	}
 	
 	public void addGoodPhone(GoodPhone phone) {
+		GoodPhone old = getGoodPhone(phone.getNumber());
+		if ( old != null ) {
+			phone.setID(old.getID());
+			updateGoodPhone(phone);
+			return;
+		}
+		
 		SQLiteDatabase db = this.getWritableDatabase();
 		
 	    ContentValues values = new ContentValues();
 	    values.put(KEY_PHONE_NAME, phone.getName());
 	    values.put(KEY_PHONE_NUM, phone.getNumber());
 	    values.put(KEY_PHONE_MSG, phone.getMsg());
+	    values.put(KEY_PHONE_REPLY, phone.getToggle()?"1":"0");
 	    
 	    db.insert(TB_GOOD_PHONE, null, values);
 	    db.close();
@@ -114,7 +130,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	    if ( cursor != null ) {
 		    if (cursor.moveToFirst()) {
 		        do {
-		        	GoodPhone phone = new GoodPhone(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3));
+		        	boolean toggle = false;
+		        	if ( cursor.getString(4).equals("1") ) toggle = true; 
+		        	GoodPhone phone = new GoodPhone(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3), toggle);
 		            // Adding phone to list
 		        	phoneList.add(phone);
 		        } while (cursor.moveToNext());
@@ -131,20 +149,22 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 		String countQuery = "SELECT  * FROM " + TB_BAD_PHONE;
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(countQuery, null);
+		int count = cursor.getCount();
         cursor.close();
         db.close();
         // return count
-        return cursor.getCount();
+        return count;
 	}
 	
 	public int getGoodPhonesCount() {
 		String countQuery = "SELECT  * FROM " + TB_GOOD_PHONE;
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(countQuery, null);
+		int count = cursor.getCount();
         cursor.close();
         db.close();
         // return count
-        return cursor.getCount();
+        return count;
 	}
 	
 	public boolean hasBadPhone(String phone_num) {
@@ -177,7 +197,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	    SQLiteDatabase db = this.getReadableDatabase();
 	    
 	    Cursor cursor = db.query(TB_GOOD_PHONE, new String[] { KEY_ID,
-	    		KEY_PHONE_NAME, KEY_PHONE_NUM, KEY_PHONE_MSG }, KEY_PHONE_NUM + "=?",
+	    		KEY_PHONE_NAME, KEY_PHONE_NUM, KEY_PHONE_MSG, KEY_PHONE_REPLY }, KEY_PHONE_NUM + "=?",
 	            new String[] { phone_num }, null, null, null, null);
 	    if (cursor != null && cursor.getCount() != 0) {
 	        cursor.moveToFirst();
@@ -185,7 +205,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	    	return null;
 	    }
 	    
-	    GoodPhone phone = new GoodPhone(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3));
+	    boolean toggle = false;
+    	if ( cursor.getString(4).equals("1") ) toggle = true; 
+	    GoodPhone phone = new GoodPhone(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3), toggle);
 	    cursor.close();
 	    db.close();
 	    return phone;
@@ -210,6 +232,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	    values.put(KEY_PHONE_NAME, phone.getName());
 	    values.put(KEY_PHONE_NUM, phone.getNumber());
 	    values.put(KEY_PHONE_MSG, phone.getMsg());
+	    values.put(KEY_PHONE_REPLY, phone.getToggle()?"1":"0");
 	 
 	    // updating row
 	    return db.update(TB_GOOD_PHONE, values, KEY_ID + " = ?",
