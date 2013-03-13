@@ -94,18 +94,21 @@ public class ListeningService extends Service {
                 	Log.i(TAG, "CALL_STATE_IDLE "+GoodnessIndicator.good);
                 	if ( GoodnessIndicator.good == true && incomingNumber != null && database.hasGoodPhone(incomingNumber) ) {
                 		GoodPhone phone = database.getGoodPhone(incomingNumber);
-                		SmsManager manager = SmsManager.getDefault();
-                		if ( manager != null ) {
-                			String msg = phone.getMsg();
-                			ArrayList<String> list = manager.divideMessage(msg);
-                			if ( list.size() > 1 ) {
-                				manager.sendMultipartTextMessage(incomingNumber, null, list, null, null);
-                			} else {
-                				manager.sendTextMessage(incomingNumber, null, msg, null, null);
-                			}
-                			Toast.makeText(getBaseContext(), "发送亲情短信成功", Toast.LENGTH_LONG).show();
-                		} else {
-                			Toast.makeText(getBaseContext(), "发送亲情短信失败", Toast.LENGTH_LONG).show();
+                		if ( phone.getToggle() ) // auto reply is on
+                		{
+	                		SmsManager manager = SmsManager.getDefault();
+	                		if ( manager != null ) {
+	                			String msg = phone.getMsg();
+	                			ArrayList<String> list = manager.divideMessage(msg);
+	                			if ( list.size() > 1 ) {
+	                				manager.sendMultipartTextMessage(incomingNumber, null, list, null, null);
+	                			} else {
+	                				manager.sendTextMessage(incomingNumber, null, msg, null, null);
+	                			}
+	                			Toast.makeText(getBaseContext(), "发送亲情短信成功", Toast.LENGTH_LONG).show();
+	                		} else {
+	                			Toast.makeText(getBaseContext(), "发送亲情短信失败", Toast.LENGTH_LONG).show();
+	                		}
                 		}
                 	}
                 	GoodnessIndicator.good = false;
