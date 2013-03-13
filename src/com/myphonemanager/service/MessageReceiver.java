@@ -20,13 +20,38 @@ public class MessageReceiver extends BroadcastReceiver {
 		Bundle pudsBundle = intent.getExtras();
         Object[] pdus = (Object[]) pudsBundle.get("pdus");
         SmsMessage messages = SmsMessage.createFromPdu((byte[]) pdus[0]);
-        Log.i(TAG, "Message from " + messages.getOriginatingAddress() + ": " + messages.getMessageBody());
         
-        if(messages.getMessageBody().contains("Hi")) {
+        Log.i(TAG, "Message from " + messages.getOriginatingAddress() + ": " + messages.getMessageBody());
+        String incomingNumber = messages.getOriginatingAddress();
+        boolean bad = database.hasBadPhone(incomingNumber);
+        boolean good = database.hasGoodPhone(incomingNumber);
+        boolean def_to_intercept = true;//database.isDefaultToIntercept();
+        
+        if ( bad && good ) { // in both list
+        	if ( def_to_intercept )
+        	{
+        		database.saveMessage(messages);
+        		abortBroadcast();
+        		return;
+        	}
+        	else
+        	{
+        		// do nothing
+        		//return;
+        	}
+        }
+        else if ( bad && !good ) {
         	database.saveMessage(messages);
-        	abortBroadcast();
+    		abortBroadcast();
+    		return;
+        }
+        else if ( !bad && good ) {
+        	// do nothing
+        	return;
+        }
+        else if ( !bad && !good ) { // apply bayesian rule
+        	
         }
 	}
-
 
 }

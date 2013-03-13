@@ -12,5 +12,8 @@
     <string name="title_activity_list_good_phone">亲情号码列表</string>
     <string name="confirm">确认</string>
     <string name="title_activity_list_message">拦截短信列表</string>
+    <string name="toggle_reply_on">自动回复开</string>
+    <string name="toggle_reply_off">自动回复关</string>
+    <string name="delete">删除</string>
 
 </resources>

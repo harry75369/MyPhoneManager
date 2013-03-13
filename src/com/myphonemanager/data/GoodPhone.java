@@ -33,4 +33,8 @@ public class GoodPhone extends BadPhone {
 		return !(name.isEmpty() || number.isEmpty() || msg.isEmpty());
 	}
 
+	public Boolean getToggle() {
+		return true;
+	}
+
 }
