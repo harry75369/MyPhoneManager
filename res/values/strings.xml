@@ -15,5 +15,7 @@
     <string name="toggle_reply_on">自动回复开</string>
     <string name="toggle_reply_off">自动回复关</string>
     <string name="delete">删除</string>
+    <string name="title_activity_config_message">短信管理设置</string>
+    <string name="clear">清空</string>
 
 </resources>

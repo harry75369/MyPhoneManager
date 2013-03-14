@@ -16,7 +16,7 @@ public class MessageActivity extends Activity {
 	
 	final static String TAG = "MessageActivity"; 
 	
-	static String[] menuItems = {"设置", "已拦截短信"};
+	static String[] menuItems = {"设置", "查看统计信息", "添加过滤关键字", "过滤关键字列表", "已拦截短信"};
 	private Context context = this;
 
 	@Override
@@ -34,15 +34,25 @@ public class MessageActivity extends Activity {
 					long arg3) {
 				switch ( arg2 ) {
 				case 0: { // 设置
+					Intent intent = new Intent(context, ConfigMessageActivity.class);
+					startActivity(intent);
 					break;
 				}
-				case 1: { // 已拦截短息
+				case 1: { // 查看统计信息
+					break;
+				}
+				case 2: { // 添加过滤关键字
+					break;
+				}
+				case 3: { // 过滤关键字列表
+					break;
+				}
+				case 4: { // 已拦截短信
 					Intent intent = new Intent(context, ListMessageActivity.class);
 					startActivity(intent);
 					break;
 				}
 				}
-				
 			}
 			
 		});

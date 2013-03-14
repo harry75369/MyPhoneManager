@@ -87,6 +87,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.myphonemanager.app.MessageActivity" />
         </activity>
+        <activity
+            android:name="com.myphonemanager.app.ConfigMessageActivity"
+            android:label="@string/title_activity_config_message" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.myphonemanager.app.ListMessageActivity"/>
+        </activity>
+            
     </application>
 
 </manifest>
