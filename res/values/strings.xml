@@ -17,5 +17,7 @@
     <string name="delete">删除</string>
     <string name="title_activity_config_message">短信管理设置</string>
     <string name="clear">清空</string>
+    <string name="reset">重置</string>
+    <string name="title_activity_list_keyword">过滤关键字列表</string>
 
 </resources>

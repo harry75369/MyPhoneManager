@@ -10,8 +10,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.telephony.SmsMessage;
+import android.util.Log;
 
 public class MySQLiteHelper extends SQLiteOpenHelper {
+	
+	public static final String TAG = "MySQLiteHelper";
 	
 	private static final String DB_NAME = "myphonemanager.sqlite";
 	private static final int DB_VERSION = 1;
@@ -19,6 +22,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	private static final String TB_BAD_PHONE = "bad_phone";
 	private static final String TB_GOOD_PHONE = "good_phone";
 	private static final String TB_MESSAGE = "message";
+	private static final String TB_KEYWORD = "keyword";
+	private static final String TB_COUNTER = "counter";
+	private static final String TB_SWITCHER = "switcher"; 
 	
 	private static final String KEY_ID = "id";
 	private static final String KEY_PHONE_NAME = "phone_name";
@@ -28,6 +34,10 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	private static final String KEY_MSG_FROM = "msg_from";
 	private static final String KEY_MSG_BODY = "msg_body";
 	private static final String KEY_MSG_DATE = "msg_date";
+	private static final String KEY_KEYWORD_NAME = "keyword_name";
+	private static final String KEY_COUNT = "counter_count";
+	private static final String KEY_SWITCH = "switch";
+	
 	
 	
 	public MySQLiteHelper(Context context) {
@@ -39,9 +49,15 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 		String CREATE_BAG_TABLE = "CREATE TABLE " + TB_BAD_PHONE + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_PHONE_NAME + " TEXT," + KEY_PHONE_NUM + " TEXT" + ")";
 		String CREATE_GOOD_TABLE = "CREATE TABLE " + TB_GOOD_PHONE + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_PHONE_NAME + " TEXT," + KEY_PHONE_NUM + " TEXT," + KEY_PHONE_MSG + " TEXT," + KEY_PHONE_REPLY + " INTEGER"+ ")";
 		String CREATE_MESSAGE_TABLE = "CREATE TABLE " + TB_MESSAGE + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_MSG_FROM + " TEXT," + KEY_MSG_BODY + " TEXT," + KEY_MSG_DATE + " TEXT" + ")";
-	    db.execSQL(CREATE_BAG_TABLE);
+	    String CREATE_KEYWORD_TABLE = "CREATE TABLE " + TB_KEYWORD + "(" + KEY_KEYWORD_NAME + " TEXT" + ")";
+	    String CREATE_COUNTER_TABLE = "CREATE TABLE " + TB_COUNTER + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_COUNT + " INTEGER" + ")";
+	    String CREATE_SWITCHER_TABLE = "CREATE TABLE " + TB_SWITCHER + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_SWITCH + " INTEGER" + ")";
+		db.execSQL(CREATE_BAG_TABLE);
 	    db.execSQL(CREATE_GOOD_TABLE);
 	    db.execSQL(CREATE_MESSAGE_TABLE);
+	    db.execSQL(CREATE_KEYWORD_TABLE);
+	    db.execSQL(CREATE_COUNTER_TABLE);
+	    db.execSQL(CREATE_SWITCHER_TABLE);
 	}
 
 	@Override
@@ -50,6 +66,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + TB_BAD_PHONE);
         db.execSQL("DROP TABLE IF EXISTS " + TB_GOOD_PHONE);
         db.execSQL("DROP TABLE IF EXISTS " + TB_MESSAGE);
+        db.execSQL("DROP TABLE IF EXISTS " + TB_KEYWORD);
+        db.execSQL("DROP TABLE IF EXISTS " + TB_COUNTER);
+        db.execSQL("DROP TABLE IF EXISTS " + TB_SWITCHER);
  
         // Create tables again
         onCreate(db);
@@ -263,7 +282,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 		return phones.get(position);
 	}
 
-	public void saveMessage(SmsMessage messages) {
+	public void saveMessage(SmsMessage messages, boolean has_keyword) {
 	    String from = messages.getOriginatingAddress();
 	    String body = messages.getMessageBody();
 	    String date = Calendar.getInstance().getTime().toString();
@@ -277,6 +296,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
 	    db.insert(TB_MESSAGE, null, values);
 	    db.close();
+	    
+	    if ( !has_keyword ) this.addNoKeywordRubbishCount();
 	}
 
 	public List<Message> getAllMessages() {
@@ -302,5 +323,189 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	 
 	    // return msg list
 	    return msgList;
+	}
+	
+	public void cleanAllMessages() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		String CREATE_MESSAGE_TABLE = "CREATE TABLE " + TB_MESSAGE + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_MSG_FROM + " TEXT," + KEY_MSG_BODY + " TEXT," + KEY_MSG_DATE + " TEXT" + ")";
+		db.execSQL("DROP TABLE IF EXISTS " + TB_MESSAGE);
+		db.execSQL(CREATE_MESSAGE_TABLE);
+		db.close();
+	}
+	
+	public List<String> getKeywords() {
+		List<String> keywordList = new ArrayList<String>();
+		String selectQuery = "SELECT * FROM " + TB_KEYWORD;
+		
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		
+		if ( cursor != null ) {
+			if ( cursor.moveToFirst() ) {
+				do {
+					keywordList.add(cursor.getString(0));
+				} while ( cursor.moveToNext() );
+			}
+			cursor.close();
+		}
+		db.close();
+		
+		return keywordList;
+	}
+	
+	public void addKeyword(String keyword) {
+		delKeyword(keyword);
+		
+		SQLiteDatabase db = this.getWritableDatabase();
+		 
+	    ContentValues values = new ContentValues();
+	    values.put(KEY_KEYWORD_NAME, keyword);
+	 
+	    db.insert(TB_KEYWORD, null, values);
+	    db.close();
+	}
+
+	public void delKeyword(String keyword) {
+		SQLiteDatabase db = this.getWritableDatabase();
+	    db.delete(TB_KEYWORD, KEY_KEYWORD_NAME + " = ?",
+	            new String[] { keyword });
+	    db.close();
+	}
+	
+	private void addCounter(Integer id) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		String selectQuery = "SELECT * FROM " + TB_COUNTER + " WHERE " + KEY_ID + "=" + id;
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		int count = 0;
+		
+		if ( cursor != null && cursor.moveToFirst() ) {
+			count = Integer.valueOf(cursor.getString(1));
+		}
+		ContentValues values = new ContentValues();
+		values.put(KEY_ID, id);
+		Integer newCount = count + 1;
+		values.put(KEY_COUNT, newCount);
+		Log.i(TAG, "counter " + id + " now: " + newCount);
+		
+		if ( cursor != null && cursor.moveToFirst() ) {
+			cursor.close();
+			db.update(TB_COUNTER, values, KEY_ID + " = ?", new String[] { ""+id });
+			db.close();
+		}
+		else
+		{
+			db.insert(TB_COUNTER, null, values);
+			db.close();
+		}
+	}
+
+	public void addMessageCount() {
+		addCounter(0);
+	}
+	
+	public void addHasKeywordMessageCount() {
+		addCounter(1);
+	}
+
+	public void addNoKeywordRubbishCount() {
+		addCounter(2);
+	}
+	
+	private int getCounter(int id) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		String selectQuery = "SELECT * FROM " + TB_COUNTER + " WHERE " + KEY_ID + "=" + id;
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		int count = 0;
+		if ( cursor != null && cursor.moveToFirst() ) {
+			count = Integer.valueOf(cursor.getString(1));
+		}
+		return count;
+	}
+
+	public double getProbability(boolean has_keyword) {
+		int[] counts = new int[3];
+		for ( int i=0; i < 3; i++ )
+		{
+			counts[i] = getCounter(i);
+		}
+		
+		double prob = 0;
+		int total = counts[0];
+		int hasKey = counts[1];
+		if ( has_keyword ) hasKey -= 1;
+		int nokeyRubbish = counts[2];
+		
+		Log.i(TAG, ""+total+" "+hasKey+" "+nokeyRubbish);
+		
+		if ( total > 0 && total > hasKey )
+		{
+			prob = (double)nokeyRubbish / (total-hasKey);
+		}
+		return prob;
+	}
+
+	public void resetProbability() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		String CREATE_COUNTER_TABLE = "CREATE TABLE " + TB_COUNTER + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_COUNT + " INTEGER" + ")";
+		db.execSQL("DROP TABLE IF EXISTS " + TB_COUNTER);
+		db.execSQL(CREATE_COUNTER_TABLE);
+		db.close();
+	}
+	
+	private boolean getSwitch(int id) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		String selectQuery = "SELECT * FROM " + TB_SWITCHER + " WHERE " + KEY_ID + "=" + id;
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		
+		if ( cursor != null && cursor.moveToFirst() ) {
+			int count = Integer.valueOf(cursor.getString(1));
+			cursor.close();
+			db.close();
+			return (count != 0);
+		}
+		else {
+			ContentValues values = new ContentValues();
+			values.put(KEY_ID, id);
+			values.put(KEY_SWITCH, 1);
+			db.insert(TB_SWITCHER, null, values);
+			db.close();
+			return true;
+		}
+	}
+	
+	private void setSwitch(int id, boolean s) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		String selectQuery = "SELECT * FROM " + TB_SWITCHER + " WHERE " + KEY_ID + "=" + id;
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		
+		ContentValues values = new ContentValues();
+		values.put(KEY_ID, id);
+		values.put(KEY_SWITCH, s ? 1 : 0);
+		
+		if ( cursor != null && cursor.moveToFirst() ) { // update
+			cursor.close();
+			db.update(TB_SWITCHER, values, KEY_ID + " = ?", new String[] { ""+id });
+			db.close();
+		}
+		else { // insert
+			db.insert(TB_SWITCHER, null, values);
+			db.close();
+		}
+	}
+	
+	public boolean isMessageInterceptionOn() {
+		return getSwitch(0);
+	}
+	
+	public void setMessageInterception(boolean s) {
+		setSwitch(0, s);
+	}
+	
+	public boolean isDefaultToIntercept() {
+		return getSwitch(1);
+	}
+	
+	public void setDefaultToIntercept(boolean s) {
+		setSwitch(1, s);
 	}
 }

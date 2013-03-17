@@ -105,9 +105,9 @@ public class ListeningService extends Service {
 	                			} else {
 	                				manager.sendTextMessage(incomingNumber, null, msg, null, null);
 	                			}
-	                			Toast.makeText(getBaseContext(), "发送亲情短信成功", Toast.LENGTH_LONG).show();
+	                			Toast.makeText(getBaseContext(), "发送亲情短信成功："+incomingNumber, Toast.LENGTH_LONG).show();
 	                		} else {
-	                			Toast.makeText(getBaseContext(), "发送亲情短信失败", Toast.LENGTH_LONG).show();
+	                			Toast.makeText(getBaseContext(), "发送亲情短信失败："+incomingNumber, Toast.LENGTH_LONG).show();
 	                		}
                 		}
                 	}

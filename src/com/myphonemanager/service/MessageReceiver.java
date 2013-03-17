@@ -1,5 +1,7 @@
 package com.myphonemanager.service;
 
+import java.util.List;
+
 import com.myphonemanager.data.MySQLiteHelper;
 
 import android.content.BroadcastReceiver;
@@ -8,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
+import android.widget.Toast;
 
 public class MessageReceiver extends BroadcastReceiver {
 
@@ -25,32 +28,67 @@ public class MessageReceiver extends BroadcastReceiver {
         String incomingNumber = messages.getOriginatingAddress();
         boolean bad = database.hasBadPhone(incomingNumber);
         boolean good = database.hasGoodPhone(incomingNumber);
-        boolean def_to_intercept = true;//database.isDefaultToIntercept();
+        boolean def_to_intercept = database.isDefaultToIntercept();
+        boolean has_keyword = false;
+        
+        List<String> keywords = database.getKeywords();
+    	String body = messages.getMessageBody();
+    	for ( String k : keywords ) {
+    		if ( body.contains(k) )
+    		{
+    			database.addHasKeywordMessageCount();
+    			has_keyword = true;
+    			break;
+    		}
+    	}
         
         if ( bad && good ) { // in both list
         	if ( def_to_intercept )
         	{
-        		database.saveMessage(messages);
+        		database.saveMessage(messages, has_keyword);
+        		database.addMessageCount();
         		abortBroadcast();
+        		Toast.makeText(context, "已拦截短信："+incomingNumber, Toast.LENGTH_SHORT).show();
         		return;
         	}
         	else
         	{
-        		// do nothing
-        		//return;
+        		database.addMessageCount();
+        		return;
         	}
         }
         else if ( bad && !good ) {
-        	database.saveMessage(messages);
+        	database.saveMessage(messages, has_keyword);
+        	database.addMessageCount();
     		abortBroadcast();
+    		Toast.makeText(context, "已拦截短信："+incomingNumber, Toast.LENGTH_SHORT).show();
     		return;
         }
         else if ( !bad && good ) {
-        	// do nothing
+        	database.addMessageCount();
         	return;
         }
-        else if ( !bad && !good ) { // apply bayesian rule
-        	
+        else if ( !bad && !good ) {
+        	if ( has_keyword )
+        	{
+        		database.saveMessage(messages, has_keyword);
+        		database.addMessageCount();
+        		abortBroadcast();
+        		Toast.makeText(context, "已拦截短信："+incomingNumber, Toast.LENGTH_SHORT).show();
+        		return;
+        	}
+        	double prob = database.getProbability(has_keyword);
+        	if ( prob >= 0.5 )
+        	{
+        		database.saveMessage(messages, has_keyword);
+        		database.addMessageCount();
+        		abortBroadcast();
+        		Toast.makeText(context, "已拦截短信："+incomingNumber, Toast.LENGTH_SHORT).show();
+        		return;
+        	} else {
+        		database.addMessageCount();
+        		return;
+        	}
         }
 	}
 

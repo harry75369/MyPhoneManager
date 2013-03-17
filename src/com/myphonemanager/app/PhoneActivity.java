@@ -4,6 +4,7 @@ import com.myphonemanager.R;
 import com.myphonemanager.data.BadPhone;
 import com.myphonemanager.data.GoodPhone;
 import com.myphonemanager.data.MySQLiteHelper;
+import com.myphonemanager.service.ListeningService;
 
 import android.os.Bundle;
 import android.annotation.SuppressLint;
@@ -28,7 +29,7 @@ public class PhoneActivity extends Activity {
 	
 	final static String TAG = "PhoneActivity"; 
 
-	static String[] menuItems = {"增加拒绝号码", "增加亲情号码", "拒绝号码列表", "亲情号码列表"};
+	static String[] menuItems = {"增加拒绝号码", "增加亲情号码", "拒绝号码列表", "亲情号码列表", "打开来电服务", "关闭来电服务"};
 	private Context context = this;
 	private MySQLiteHelper database = new MySQLiteHelper(context);
 	
@@ -72,7 +73,7 @@ public class PhoneActivity extends Activity {
 							BadPhone phone = new BadPhone(name, number);
 							if (phone.isValid() ) {
 								database.addBadPhone(phone);
-								Toast.makeText(context, "拒绝号码已添加", Toast.LENGTH_SHORT).show();
+								Toast.makeText(context, "拒绝号码已添加："+number, Toast.LENGTH_SHORT).show();
 							} else {
 								Toast.makeText(context, "请输入全部正确信息后再添加", Toast.LENGTH_SHORT).show();
 							}
@@ -113,7 +114,7 @@ public class PhoneActivity extends Activity {
 							GoodPhone phone = new GoodPhone(name, number, msg);
 							if ( phone.isValid() ) {
 								database.addGoodPhone(phone);
-								Toast.makeText(context, "亲情号码已添加", Toast.LENGTH_SHORT).show();
+								Toast.makeText(context, "亲情号码已添加："+number, Toast.LENGTH_SHORT).show();
 							} else {
 								Toast.makeText(context, "请输入全部正确信息后再添加", Toast.LENGTH_SHORT).show();
 							}
@@ -131,6 +132,18 @@ public class PhoneActivity extends Activity {
 				case 3: { // 亲情号码列表
 					Intent intent = new Intent(context, ListGoodPhoneActivity.class);
 					startActivity(intent);
+					break;
+				}
+				case 4: { // 打开服务
+					Intent intent = new Intent(context, ListeningService.class);
+					startService(intent);
+					Toast.makeText(context, "服务已打开", Toast.LENGTH_SHORT).show();
+					break;
+				}
+				case 5: { // 关闭服务
+					Intent intent = new Intent(context, ListeningService.class);
+					stopService(intent);
+					Toast.makeText(context, "服务已关闭", Toast.LENGTH_SHORT).show();
 					break;
 				}
 				}
