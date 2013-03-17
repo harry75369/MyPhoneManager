@@ -26,6 +26,9 @@ public class MessageReceiver extends BroadcastReceiver {
         
         Log.i(TAG, "Message from " + messages.getOriginatingAddress() + ": " + messages.getMessageBody());
         String incomingNumber = messages.getOriginatingAddress();
+        if ( incomingNumber.startsWith("+86") ) {
+        	incomingNumber = incomingNumber.substring(3);
+        }
         boolean bad = database.hasBadPhone(incomingNumber);
         boolean good = database.hasGoodPhone(incomingNumber);
         boolean def_to_intercept = database.isDefaultToIntercept();
@@ -40,6 +43,12 @@ public class MessageReceiver extends BroadcastReceiver {
     			has_keyword = true;
     			break;
     		}
+    	}
+    	
+    	if ( !database.isMessageInterceptionOn() ) // if interception is off
+    	{
+    		database.addMessageCount();
+    		return;
     	}
         
         if ( bad && good ) { // in both list

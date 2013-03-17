@@ -457,8 +457,11 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 		String selectQuery = "SELECT * FROM " + TB_SWITCHER + " WHERE " + KEY_ID + "=" + id;
 		Cursor cursor = db.rawQuery(selectQuery, null);
 		
+		Log.i(TAG, "switch id="+id);
+		
 		if ( cursor != null && cursor.moveToFirst() ) {
 			int count = Integer.valueOf(cursor.getString(1));
+			Log.i(TAG, "get switch="+count);
 			cursor.close();
 			db.close();
 			return (count != 0);
@@ -468,6 +471,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 			values.put(KEY_ID, id);
 			values.put(KEY_SWITCH, 1);
 			db.insert(TB_SWITCHER, null, values);
+			Log.i(TAG, "set initial switch to 1");
 			db.close();
 			return true;
 		}
